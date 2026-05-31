@@ -47,6 +47,7 @@ dist/
 #  produced by CI and uploaded to GitHub Releases, not committed.)
 # ──────────────────────────────────────────────────────────────
 FFM_Installer.exe
+FFP_Installer.exe
 Setup_*.exe
 Output/
 *.iss.bak
