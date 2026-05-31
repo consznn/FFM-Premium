@@ -1,5 +1,5 @@
 #define MyAppName "FastFlag+ Manager"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "0.0.2"
 #define MyAppPublisher "consznn"
 #define MyAppURL "https://github.com/consznn/FFM-Premium"
 #define MyAppExeName "FastFlag+ Manager.exe"
