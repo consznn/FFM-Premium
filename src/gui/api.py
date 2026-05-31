@@ -210,6 +210,11 @@ class Api:
             return {'ok': False, 'error': 'Not ready'}
 
         try:
+            # 0. Kill watchdog FIRST — prevents it from re-applying mid-operation
+            self.flag_manager._deapplied = True
+            self.flag_manager.stop_watchdog()
+            log("[*] Watchdog stopped before deapply", (180, 180, 255))
+
             # 1. Clear ClientAppSettings.json across all version dirs
             self.roblox_manager.clear_fflags_json()
             log("[+] ClientAppSettings.json cleared", (180, 220, 180))
@@ -217,12 +222,12 @@ class Api:
             # 2. Revert each applied flag to its original value in memory
             reverted = 0
             skipped = 0
+            json_cleared = 0
             if self.roblox_manager.is_attached and self.roblox_manager.open_process_for_write():
                 from src.utils.helpers import infer_type_from_name, clean_flag_name, get_default_value
                 with self.flag_manager._lock:
                     flags_snapshot = list(self.flag_manager.user_flags)
 
-                # Re-scan live addresses to ensure freshness
                 target_names = [f['name'] for f in flags_snapshot]
                 fresh_addrs = self.roblox_manager.scan_live_flags(target_names, force_rescan=True)
 
@@ -230,7 +235,7 @@ class Api:
                     name = flag['name']
                     flag_type = infer_type_from_name(name) or flag.get('type', 'string')
                     if flag_type == 'string':
-                        skipped += 1
+                        json_cleared += 1
                         continue
 
                     clean = clean_flag_name(name)
@@ -239,7 +244,9 @@ class Api:
                         skipped += 1
                         continue
 
-                    orig = flag.get('original_value') or get_default_value(name)
+                    orig = flag.get('original_value')
+                    if orig is None:
+                        orig = get_default_value(name)
                     if orig is None:
                         skipped += 1
                         continue
@@ -255,18 +262,18 @@ class Api:
                             skipped += 1
                             break
 
-            msg = f"[+] Deapplied: {reverted} flags reverted, {skipped} skipped (JSON cleared)."
+            msg_parts = [f"[+] Deapplied: {reverted} flags reverted to original values"]
+            if json_cleared:
+                msg_parts.append(f"{json_cleared} string flags cleared via JSON")
+            if skipped:
+                msg_parts.append(f"{skipped} skipped (address not found)")
+            msg = ", ".join(msg_parts) + "."
             log(msg, (100, 255, 100))
 
             # 3. Mark statuses as cleared
             with self.flag_manager._lock:
                 for f in self.flag_manager.user_flags:
                     f['_status'] = None
-
-            # 4. Set deapplied flag so watchdog skips enforcement, then stop it
-            if self.flag_manager:
-                self.flag_manager._deapplied = True
-                self.flag_manager.stop_watchdog()
 
             return {'ok': True, 'reverted': reverted, 'skipped': skipped}
         except Exception as e:
