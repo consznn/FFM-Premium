@@ -79,6 +79,7 @@ memory_proximity.txt
 targets.json
 last_version.txt
 *.log
+bootstrapper.spec
 
 # ──────────────────────────────────────────────────────────────
 # User data (lives in %USERPROFILE%/.FFlagManager normally;
