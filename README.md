@@ -6,7 +6,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-v1.0.0-00d4aa?style=flat-square)
+![Version](https://img.shields.io/badge/version-v0.0.2-00d4aa?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-Windows-7c5cfc?style=flat-square)
 ![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-ff5500?style=flat-square)
 
