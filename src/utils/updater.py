@@ -6,7 +6,7 @@ import requests
 from src.utils.logger import log
 
 VERSION_FILE = "version.json"
-GITHUB_API = "https://api.github.com/repos/4anti/Roblox-Fastflag-Manager/releases/latest"
+GITHUB_API = "https://api.github.com/repos/consznn/FFM-Premium/releases/latest"
 
 def get_current_version():
     """Read local version from version.json."""

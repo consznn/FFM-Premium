@@ -12,7 +12,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={localappdata}\Programs\{#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputDir=.
@@ -33,10 +33,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [InstallDelete]
-; Clean up old install directory if still present
-Type: filesandordirs; Name: "{pf32}\Roblox FFlag Manager"
-Type: filesandordirs; Name: "{pf}\Roblox FFlag Manager"
-; Clean up old shortcuts
+; Remove the old shortcut so user doesn't accidentally launch old app
 Type: files; Name: "{autoprograms}\Roblox FFlag Manager.lnk"
 Type: files; Name: "{autodesktop}\Roblox FFlag Manager.lnk"
 
@@ -49,24 +46,3 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait
-
-[Code]
-procedure UninstallOldVersion(InstallPath: string);
-var
-  Uninstaller: string;
-  ResultCode: Integer;
-begin
-  Uninstaller := InstallPath + '\unins000.exe';
-  if FileExists(Uninstaller) then
-  begin
-    if Exec(Uninstaller, '/SILENT /NORESTART', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-      Sleep(500);
-  end;
-end;
-
-function InitializeSetup: Boolean;
-begin
-  Result := True;
-  UninstallOldVersion(ExpandConstant('{pf32}\Roblox FFlag Manager'));
-  UninstallOldVersion(ExpandConstant('{pf}\Roblox FFlag Manager'));
-end;
